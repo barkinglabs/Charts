@@ -247,7 +247,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 if !viewPortHandler.isInBoundsRight(_barShadowRectBuffer.origin.x)
                 {
-                    break
+                    continue
                 }
                 
                 _barShadowRectBuffer.origin.y = viewPortHandler.contentTop
@@ -274,7 +274,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 
                 if (!viewPortHandler.isInBoundsRight(barRect.origin.x))
                 {
-                    break
+                    continue
                 }
                 
                 context.setFillColor(dataSet.barShadowColor.cgColor)
@@ -300,7 +300,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
             
             if (!viewPortHandler.isInBoundsRight(barRect.origin.x))
             {
-                break
+                continue
             }
             
             if !isSingleColor
@@ -406,7 +406,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                         
                         if !viewPortHandler.isInBoundsRight(x)
                         {
-                            break
+                            continue
                         }
                         
                         if !viewPortHandler.isInBoundsY(rect.origin.y)
@@ -475,7 +475,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                         {
                             if !viewPortHandler.isInBoundsRight(x)
                             {
-                                break
+                                continue
                             }
                             
                             if !viewPortHandler.isInBoundsY(rect.origin.y)
@@ -562,7 +562,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                                 
                                 if !viewPortHandler.isInBoundsRight(x)
                                 {
-                                    break
+                                    continue
                                 }
                                 
                                 if !viewPortHandler.isInBoundsY(y) || !viewPortHandler.isInBoundsLeft(x)
