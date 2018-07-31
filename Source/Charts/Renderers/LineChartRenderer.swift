@@ -204,31 +204,36 @@ open class LineChartRenderer: LineRadarRenderer
         
         if _xBounds.range >= 1
         {
-            var prev: ChartDataEntry! = dataSet.entryForIndex(_xBounds.min)
-            var cur: ChartDataEntry! = prev
-            
-            if cur == nil { return }
+            guard let dataEntryAtMinimumBounds = dataSet.entryForIndex(_xBounds.min) else { return }
+            var previousDataEntry: ChartDataEntry = dataEntryAtMinimumBounds
+            var currentDataEntry: ChartDataEntry = previousDataEntry
             
             // let the spline start
-            cubicPath.move(to: CGPoint(x: CGFloat(cur.x), y: CGFloat(cur.y * phaseY)), transform: valueToPixelMatrix)
+            cubicPath.move(to: CGPoint(x: CGFloat(currentDataEntry.x), y: CGFloat(currentDataEntry.y * phaseY)), transform: valueToPixelMatrix)
             
             for j in stride(from: (_xBounds.min + 1), through: _xBounds.range + _xBounds.min, by: 1)
             {
-                prev = cur
-                cur = dataSet.entryForIndex(j)
+                guard let nextDataEntry = dataSet.entryForIndex(j) else {
+                    continue
+                }
+                previousDataEntry = currentDataEntry
+                currentDataEntry = nextDataEntry
                 
-                let cpx = CGFloat(prev.x + (cur.x - prev.x) / 2.0)
+                let controlPointX = CGFloat(previousDataEntry.x + (currentDataEntry.x - previousDataEntry.x) / 2.0)
                 
                 cubicPath.addCurve(
                     to: CGPoint(
-                        x: CGFloat(cur.x),
-                        y: CGFloat(cur.y * phaseY)),
+                        x: CGFloat(currentDataEntry.x),
+                        y: CGFloat(currentDataEntry.y * phaseY)
+                    ),
                     control1: CGPoint(
-                        x: cpx,
-                        y: CGFloat(prev.y * phaseY)),
+                        x: controlPointX,
+                        y: CGFloat(previousDataEntry.y * phaseY)
+                    ),
                     control2: CGPoint(
-                        x: cpx,
-                        y: CGFloat(cur.y * phaseY)),
+                        x: controlPointX,
+                        y: CGFloat(currentDataEntry.y * phaseY)
+                    ),
                     transform: valueToPixelMatrix)
             }
         }
@@ -774,7 +779,7 @@ open class LineChartRenderer: LineRadarRenderer
             }
             
             let x = high.x // get the x-position
-            let y = high.y * Double(animator.phaseY)
+            let y = (!high.y.isNaN ? high.y : 0)
             
             if x > chartXMax * animator.phaseX
             {
@@ -789,7 +794,7 @@ open class LineChartRenderer: LineRadarRenderer
             
             // draw the lines
             if set.rendersVerticalHighlightAsCursor {
-                drawCursorHighlight(high, set: set, trans: trans, pt: pt, context: context, x: x)
+                drawCursorHighlight(high, set: set, trans: trans, context: context)
             } else {
                 drawHighlightLines(context: context, point: pt, set: set)
             }
@@ -798,40 +803,33 @@ open class LineChartRenderer: LineRadarRenderer
         context.restoreGState()
     }
 
-    private func drawCursorHighlight(_ high: Highlight, set: ILineChartDataSet, trans: Transformer, pt: CGPoint, context: CGContext, x: Double) {
-        var cursorHeadRadius: Double = Double(set.lineWidth) + 4
-
+    private func drawCursorHighlight(_ high: Highlight, set: ILineChartDataSet, trans: Transformer, context: CGContext) {
         var yValue: Double = 0
         if let entryToHighlight = set.entryForXValue(high.x, closestToY: high.y), entryToHighlight.y > 0 {
             yValue = entryToHighlight.y
         }
 
-        let startY = trans.pixelForValues(x: x, y: yValue).y
-        drawHighlightLines(context: context, point: pt, startY: startY, set: set)
+        let startPoint = trans.pixelForValues(x: high.x, y: yValue)
+        drawHighlightLinesFromPoint(startPoint, context: context, set: set)
 
         let cursorHeadPoint = CGPoint(x: high.x, y: yValue)
-        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0).cgColor, context: context, transformer: trans)
+        var cursorHeadRadius: Double = Double(set.lineWidth) + 4
+        drawCircleWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0).cgColor, context: context, transformer: trans)
         cursorHeadRadius = cursorHeadRadius - 1.0
-        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.white.cgColor, context: context, transformer: trans)
+        drawCircleWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.white.cgColor, context: context, transformer: trans)
 
         // N.B. Then draw inner circle
         cursorHeadRadius = cursorHeadRadius - 1.5
-        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.blue.cgColor, context: context, transformer: trans)
+        drawCircleWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.blue.cgColor, context: context, transformer: trans)
     }
 
-    private func drawCursorWithRadius(_ radius: Double, at point: CGPoint, color: CGColor, context: CGContext, transformer: Transformer) {
-        context.move(to: point)
+    private func drawCircleWithRadius(_ radius: Double, at centerPoint: CGPoint, color: CGColor, context: CGContext, transformer: Transformer) {
+        context.move(to: centerPoint)
         context.setFillColor(color)
-        var cursorHeadRect = CGRect(
-            // TODO: Need to dig into this x value logic, it makes no sense and is likely screen size dependent based on the transforms
-            x: Double(point.x) - radius * 40,
-            y: Double(point.y) - radius,
-            width: radius * 2,
-            height: radius * 2
-        )
-        transformer.rectValueToPixel(&cursorHeadRect)
-        // Force width/height to be equal
-        cursorHeadRect.size.width = cursorHeadRect.size.height
+        var circleRectOriginPoint = transformer.pixelForValues(x: Double(centerPoint.x), y: Double(centerPoint.y))
+        circleRectOriginPoint.x = circleRectOriginPoint.x - CGFloat(radius)
+        circleRectOriginPoint.y = circleRectOriginPoint.y - CGFloat(radius)
+        let cursorHeadRect = CGRect(origin: circleRectOriginPoint, size: CGSize(width: radius * 2, height: radius * 2))
         context.fillEllipse(in: cursorHeadRect)
     }
 

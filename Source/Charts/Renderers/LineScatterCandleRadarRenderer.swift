@@ -25,7 +25,11 @@ open class LineScatterCandleRadarRenderer: BarLineScatterCandleBubbleRenderer
     /// :param: points
     /// :param: horizontal
     /// :param: vertical
-    @objc open func drawHighlightLines(context: CGContext, point: CGPoint, set: ILineScatterCandleRadarChartDataSet)
+    @objc open func drawHighlightLines(context: CGContext, point: CGPoint, set: ILineScatterCandleRadarChartDataSet) {
+        drawHighlightLinesThroughPoint(point, context: context, set: set)
+    }
+
+    @objc open func drawHighlightLinesThroughPoint(_ point: CGPoint, context: CGContext, set: ILineScatterCandleRadarChartDataSet)
     {
         // draw vertical highlight lines
         if set.isVerticalHighlightIndicatorEnabled
@@ -43,12 +47,12 @@ open class LineScatterCandleRadarRenderer: BarLineScatterCandleBubbleRenderer
         }
     }
 
-    @objc open func drawHighlightLines(context: CGContext, point: CGPoint, startY: CGFloat, set: ILineScatterCandleRadarChartDataSet)
+    @objc open func drawHighlightLinesFromPoint(_ point: CGPoint, context: CGContext, set: ILineScatterCandleRadarChartDataSet)
     {
         if set.isVerticalHighlightIndicatorEnabled
         {
             context.beginPath()
-            context.move(to: CGPoint(x: point.x, y: startY))
+            context.move(to: CGPoint(x: point.x, y: point.y))
             context.addLine(to: CGPoint(x: point.x, y: viewPortHandler.contentBottom))
             context.strokePath()
         }
