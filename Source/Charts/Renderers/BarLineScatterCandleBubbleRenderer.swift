@@ -78,11 +78,14 @@ open class BarLineScatterCandleBubbleRenderer: DataRenderer
             let low = chart.lowestVisibleX
             let high = chart.highestVisibleX
             
-            let entryFrom = dataSet.entryForXValue(low, closestToY: Double.nan, rounding: ChartDataSetRounding.down)
-            let entryTo = dataSet.entryForXValue(high, closestToY: Double.nan, rounding: ChartDataSetRounding.up)
-            
-            self.min = entryFrom == nil ? 0 : dataSet.entryIndex(entry: entryFrom!)
-            self.max = entryTo == nil ? 0 : dataSet.entryIndex(entry: entryTo!)
+            self.min = 0
+            self.max = 0
+            if let entryFrom = dataSet.entryForXValue(low, closestToY: Double.nan, rounding: ChartDataSetRounding.down) {
+                self.min = dataSet.entryIndex(entry: entryFrom)
+            }
+            if let entryTo = dataSet.entryForXValue(high, closestToY: Double.nan, rounding: ChartDataSetRounding.up) {
+                self.max = dataSet.entryIndex(entry: entryTo)
+            }
             range = Int(Double(self.max - self.min) * phaseX)
         }
     }
