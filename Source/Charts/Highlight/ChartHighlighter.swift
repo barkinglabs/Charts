@@ -16,6 +16,7 @@ open class ChartHighlighter : NSObject, IHighlighter
 {
     /// instance of the data-provider
     @objc open weak var chart: ChartDataProvider?
+    @objc open var distanceFromTapEntryHighlightThreshold: Double = .infinity
     
     @objc public init(chart: ChartDataProvider)
     {
@@ -49,7 +50,7 @@ open class ChartHighlighter : NSObject, IHighlighter
         guard let chart = chart else { return nil }
         
         let closestValues = getHighlights(xValue: xVal, x: x, y: y)
-        guard !closestValues.isEmpty else { return nil }
+        guard !closestValues.isEmpty else { return Highlight(x: xVal, y: Double(y), dataSetIndex: 0, dataIndex: 0) }
         
         let leftAxisMinDist = getMinimumDistance(closestValues: closestValues, y: y, axis: .left)
         let rightAxisMinDist = getMinimumDistance(closestValues: closestValues, y: y, axis: .right)
@@ -109,6 +110,8 @@ open class ChartHighlighter : NSObject, IHighlighter
         
         for e in entries
         {
+            guard distanceFromTapEntryHighlightThreshold == .infinity || abs(e.x - xValue) <= distanceFromTapEntryHighlightThreshold else { continue }
+
             let px = chart.getTransformer(forAxis: set.axisDependency).pixelForValues(x: e.x, y: e.y)
 
             let highlight = Highlight(x: e.x, y: e.y, xPx: px.x, yPx: px.y, dataSetIndex: dataSetIndex, axis: set.axisDependency)

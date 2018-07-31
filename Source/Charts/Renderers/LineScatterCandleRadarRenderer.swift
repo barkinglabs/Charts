@@ -27,7 +27,6 @@ open class LineScatterCandleRadarRenderer: BarLineScatterCandleBubbleRenderer
     /// :param: vertical
     @objc open func drawHighlightLines(context: CGContext, point: CGPoint, set: ILineScatterCandleRadarChartDataSet)
     {
-        
         // draw vertical highlight lines
         if set.isVerticalHighlightIndicatorEnabled
         {
@@ -40,10 +39,29 @@ open class LineScatterCandleRadarRenderer: BarLineScatterCandleBubbleRenderer
         // draw horizontal highlight lines
         if set.isHorizontalHighlightIndicatorEnabled
         {
+            drawHorizontalHighlightAtPoint(point, context: context)
+        }
+    }
+
+    @objc open func drawHighlightLines(context: CGContext, point: CGPoint, startY: CGFloat, set: ILineScatterCandleRadarChartDataSet)
+    {
+        if set.isVerticalHighlightIndicatorEnabled
+        {
             context.beginPath()
-            context.move(to: CGPoint(x: viewPortHandler.contentLeft, y: point.y))
-            context.addLine(to: CGPoint(x: viewPortHandler.contentRight, y: point.y))
+            context.move(to: CGPoint(x: point.x, y: startY))
+            context.addLine(to: CGPoint(x: point.x, y: viewPortHandler.contentBottom))
             context.strokePath()
         }
+        if set.isHorizontalHighlightIndicatorEnabled
+        {
+            drawHorizontalHighlightAtPoint(point, context: context)
+        }
+    }
+
+    private func drawHorizontalHighlightAtPoint(_ point: CGPoint, context: CGContext) {
+        context.beginPath()
+        context.move(to: CGPoint(x: viewPortHandler.contentLeft, y: point.y))
+        context.addLine(to: CGPoint(x: viewPortHandler.contentRight, y: point.y))
+        context.strokePath()
     }
 }

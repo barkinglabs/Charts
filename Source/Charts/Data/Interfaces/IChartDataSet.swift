@@ -185,6 +185,8 @@ public protocol IChartDataSet
     
     /// - returns: `true` if value highlighting is enabled for this dataset
     var isHighlightEnabled: Bool { get }
+
+    var rendersVerticalHighlightAsCursor: Bool { get set }
     
     /// Custom formatter that is used instead of the auto-formatter if set
     var valueFormatter: IValueFormatter? { get set }

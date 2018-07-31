@@ -137,6 +137,9 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     
     /// An extra offset to be appended to the viewport's left
     @objc open var extraLeftOffset: CGFloat = 0.0
+
+    /// If set to false, user can tap anywhere on the chart to highlight. defaults to true
+    @objc open var tapToHighlightRequiresDataEntry = true
     
     @objc open func setExtraOffsets(left: CGFloat, top: CGFloat, right: CGFloat, bottom: CGFloat)
     {
@@ -510,7 +513,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
         {
             // set the indices to highlight
             entry = _data?.entryForHighlight(h!)
-            if entry == nil
+            if entry == nil && tapToHighlightRequiresDataEntry
             {
                 h = nil
                 _indicesToHighlight.removeAll(keepingCapacity: false)
@@ -523,10 +526,10 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
         
         if callDelegate, let delegate = delegate
         {
-            if let h = h
+            if let h = h, let entry = entry
             {
                 // notify the listener
-                delegate.chartValueSelected?(self, entry: entry!, highlight: h)
+                delegate.chartValueSelected?(self, entry: entry, highlight: h)
             }
             else
             {

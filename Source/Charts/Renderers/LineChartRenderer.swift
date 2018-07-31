@@ -760,13 +760,8 @@ open class LineChartRenderer: LineRadarRenderer
                 , set.isHighlightEnabled
                 else { continue }
             
-            guard let e = set.entryForXValue(high.x, closestToY: high.y) else { continue }
-            
-            if !isInBoundsX(entry: e, dataSet: set)
-            {
-                continue
-            }
-        
+            if let e = set.entryForXValue(high.x, closestToY: high.y), !isInBoundsX(entry: e, dataSet: set) { continue }
+
             context.setStrokeColor(set.highlightColor.cgColor)
             context.setLineWidth(set.highlightLineWidth)
             if set.highlightLineDashLengths != nil
@@ -793,10 +788,51 @@ open class LineChartRenderer: LineRadarRenderer
             high.setDraw(pt: pt)
             
             // draw the lines
-            drawHighlightLines(context: context, point: pt, set: set)
+            if set.rendersVerticalHighlightAsCursor {
+                drawCursorHighlight(high, set: set, trans: trans, pt: pt, context: context, x: x)
+            } else {
+                drawHighlightLines(context: context, point: pt, set: set)
+            }
         }
         
         context.restoreGState()
+    }
+
+    private func drawCursorHighlight(_ high: Highlight, set: ILineChartDataSet, trans: Transformer, pt: CGPoint, context: CGContext, x: Double) {
+        var cursorHeadRadius: Double = Double(set.lineWidth) + 4
+
+        var yValue: Double = 0
+        if let entryToHighlight = set.entryForXValue(high.x, closestToY: high.y), entryToHighlight.y > 0 {
+            yValue = entryToHighlight.y
+        }
+
+        let startY = trans.pixelForValues(x: x, y: yValue).y
+        drawHighlightLines(context: context, point: pt, startY: startY, set: set)
+
+        let cursorHeadPoint = CGPoint(x: high.x, y: yValue)
+        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0).cgColor, context: context, transformer: trans)
+        cursorHeadRadius = cursorHeadRadius - 1.0
+        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.white.cgColor, context: context, transformer: trans)
+
+        // N.B. Then draw inner circle
+        cursorHeadRadius = cursorHeadRadius - 1.5
+        drawCursorWithRadius(cursorHeadRadius, at: cursorHeadPoint, color: UIColor.blue.cgColor, context: context, transformer: trans)
+    }
+
+    private func drawCursorWithRadius(_ radius: Double, at point: CGPoint, color: CGColor, context: CGContext, transformer: Transformer) {
+        context.move(to: point)
+        context.setFillColor(color)
+        var cursorHeadRect = CGRect(
+            // TODO: Need to dig into this x value logic, it makes no sense and is likely screen size dependent based on the transforms
+            x: Double(point.x) - radius * 40,
+            y: Double(point.y) - radius,
+            width: radius * 2,
+            height: radius * 2
+        )
+        transformer.rectValueToPixel(&cursorHeadRect)
+        // Force width/height to be equal
+        cursorHeadRect.size.width = cursorHeadRect.size.height
+        context.fillEllipse(in: cursorHeadRect)
     }
 
     /// Creates a nested array of empty subarrays each of which will be populated with NSUIAccessibilityElements.

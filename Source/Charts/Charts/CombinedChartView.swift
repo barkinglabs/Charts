@@ -53,7 +53,14 @@ open class CombinedChartView: BarLineChartViewBase, CombinedChartDataProvider
         {
             super.data = newValue
             
+            var threshold: Double = .infinity
+            if let highlighter = highlighter as? CombinedHighlighter {
+                threshold = highlighter.distanceFromTapEntryHighlightThreshold
+            }
             self.highlighter = CombinedHighlighter(chart: self, barDataProvider: self)
+            if let highlighter = highlighter as? CombinedHighlighter {
+                highlighter.distanceFromTapEntryHighlightThreshold = threshold
+            }
             
             (renderer as? CombinedChartRenderer)?.createRenderers()
             renderer?.initBuffers()
