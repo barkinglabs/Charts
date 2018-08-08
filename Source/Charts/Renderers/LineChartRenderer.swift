@@ -76,6 +76,7 @@ open class LineChartRenderer: LineRadarRenderer
         // if drawing cubic lines is enabled
         switch dataSet.mode
         {
+        case .fiStepped: fallthrough
         case .linear: fallthrough
         case .stepped:
             drawLinear(context: context, dataSet: dataSet)
