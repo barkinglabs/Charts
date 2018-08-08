@@ -22,6 +22,7 @@ open class LineChartDataSet: LineRadarChartDataSet, ILineChartDataSet
         case stepped
         case cubicBezier
         case horizontalBezier
+        case fiStepped
     }
     
     private func initialize()

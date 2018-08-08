@@ -304,7 +304,9 @@ open class LineChartRenderer: LineRadarRenderer
         let valueToPixelMatrix = trans.valueToPixelMatrix
         
         let entryCount = dataSet.entryCount
-        let isDrawSteppedEnabled = dataSet.mode == .stepped
+
+        let isDrawFiSteppedEnabled = dataSet.mode == .fiStepped
+        let isDrawSteppedEnabled = dataSet.mode == .stepped || isDrawFiSteppedEnabled
         let pointsPerEntryPair = isDrawSteppedEnabled ? 4 : 2
         
         let phaseY = animator.phaseY
@@ -402,6 +404,14 @@ open class LineChartRenderer: LineRadarRenderer
                     e2 = dataSet.entryForIndex(x)
                     
                     if e1 == nil || e2 == nil { continue }
+
+                    if isDrawFiSteppedEnabled {
+                        let minimumDrawableYValue: Double = 0
+                        guard e1.y > minimumDrawableYValue || e2.y > minimumDrawableYValue else {
+                            context.move(to: CGPoint(x: e2.x, y: e2.y).applying(valueToPixelMatrix))
+                            continue
+                        }
+                    }
                     
                     let pt = CGPoint(
                         x: CGFloat(e1.x),
@@ -425,11 +435,18 @@ open class LineChartRenderer: LineRadarRenderer
                             y: CGFloat(e1.y * phaseY)
                             ).applying(valueToPixelMatrix))
                     }
-                    
-                    context.addLine(to: CGPoint(
+
+                    if isDrawFiSteppedEnabled {
+                        context.move(to: CGPoint(
                             x: CGFloat(e2.x),
                             y: CGFloat(e2.y * phaseY)
-                        ).applying(valueToPixelMatrix))
+                            ).applying(valueToPixelMatrix))
+                    } else {
+                        context.addLine(to: CGPoint(
+                            x: CGFloat(e2.x),
+                            y: CGFloat(e2.y * phaseY)
+                            ).applying(valueToPixelMatrix))
+                    }
                 }
                 
                 if !firstPoint
