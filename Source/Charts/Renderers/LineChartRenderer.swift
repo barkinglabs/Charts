@@ -485,7 +485,7 @@ open class LineChartRenderer: LineRadarRenderer
     private func generateFilledPath(dataSet: ILineChartDataSet, fillMin: CGFloat, bounds: XBounds, matrix: CGAffineTransform) -> CGPath
     {
         let phaseY = animator.phaseY
-        let isDrawSteppedEnabled = dataSet.mode == .stepped
+        let isDrawSteppedEnabled = dataSet.mode == .stepped || dataSet.mode == .fiStepped
         let matrix = matrix
         
         var e: ChartDataEntry!
