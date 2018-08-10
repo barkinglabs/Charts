@@ -42,6 +42,8 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, IBubbleCh
     
     /// Sets/gets the width of the circle that surrounds the bubble when highlighted
     open var highlightCircleWidth: CGFloat = 2.5
+
+    open var allowsRenderingBelowXAxis: Bool = true
     
     // MARK: - NSCopying
     

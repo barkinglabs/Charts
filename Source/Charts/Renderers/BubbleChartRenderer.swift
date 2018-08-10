@@ -118,7 +118,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             
             guard
                 viewPortHandler.isInBoundsTop(_pointBuffer.y + shapeHalf),
-                viewPortHandler.isInBoundsBottom(_pointBuffer.y - shapeHalf),
+                (dataSet.allowsRenderingBelowXAxis || viewPortHandler.isInBoundsBottom(_pointBuffer.y - shapeHalf)),
                 viewPortHandler.isInBoundsLeft(_pointBuffer.x + shapeHalf)
                 else { continue }
 
@@ -199,7 +199,8 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
 
                 guard
                     viewPortHandler.isInBoundsLeft(pt.x),
-                    viewPortHandler.isInBoundsY(pt.y)
+                    viewPortHandler.isInBoundsTop(pt.y),
+                    (dataSet.allowsRenderingBelowXAxis || viewPortHandler.isInBoundsBottom(pt.y))
                     else { continue }
 
                 let text = formatter.stringForValue(
@@ -273,7 +274,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             
             let normalizeSize = dataSet.isNormalizeSizeEnabled
             
-            // calcualte the full width of 1 step on the x-axis
+            // calculate the full width of 1 step on the x-axis
             let maxBubbleWidth: CGFloat = abs(_sizeBuffer[1].x - _sizeBuffer[0].x)
             let maxBubbleHeight: CGFloat = abs(viewPortHandler.contentBottom - viewPortHandler.contentTop)
             let referenceSize: CGFloat = min(maxBubbleHeight, maxBubbleWidth)
@@ -287,7 +288,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             
             guard
                 viewPortHandler.isInBoundsTop(_pointBuffer.y + shapeHalf),
-                viewPortHandler.isInBoundsBottom(_pointBuffer.y - shapeHalf),
+                dataSet.allowsRenderingBelowXAxis || viewPortHandler.isInBoundsBottom(_pointBuffer.y - shapeHalf),
                 viewPortHandler.isInBoundsLeft(_pointBuffer.x + shapeHalf)
             else { continue }
 

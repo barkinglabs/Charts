@@ -24,4 +24,6 @@ public protocol IBubbleChartDataSet: IBarLineScatterCandleBubbleChartDataSet
     
     /// Sets/gets the width of the circle that surrounds the bubble when highlighted
     var highlightCircleWidth: CGFloat { get set }
+
+    var allowsRenderingBelowXAxis: Bool { get }
 }
