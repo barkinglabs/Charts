@@ -125,13 +125,17 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
             guard viewPortHandler.isInBoundsRight(_pointBuffer.x - shapeHalf) else { break }
             
             let color = dataSet.color(atIndex: j)
-            
-            let rect = CGRect(
+
+            var rect = CGRect(
                 x: _pointBuffer.x - shapeHalf,
                 y: _pointBuffer.y - shapeHalf,
                 width: shapeSize,
                 height: shapeSize
             )
+
+            if let xAxis = (dataProvider as? CombinedChartView)?.xAxis, dataSet.rendersAsBottomXAxisLabel {
+                rect.origin.y = viewPortHandler.contentBottom + xAxis.yOffset
+            }
 
             context.setFillColor(color.cgColor)
             context.fillEllipse(in: rect)
@@ -213,6 +217,12 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                 let valueFont = dataSet.valueFont
                 let lineHeight = valueFont.lineHeight
 
+                var yValue: CGFloat = pt.y - (0.5 * lineHeight)
+
+                if let xAxis = (dataProvider as? BarLineChartViewBase)?.xAxis, dataSet.rendersAsBottomXAxisLabel {
+                    yValue = viewPortHandler.contentBottom + xAxis.yOffset
+                }
+
                 if dataSet.isDrawValuesEnabled
                 {
                     ChartUtils.drawText(
@@ -220,7 +230,8 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                         text: text,
                         point: CGPoint(
                             x: pt.x,
-                            y: pt.y - (0.5 * lineHeight)),
+                            y: yValue
+                        ),
                         align: .center,
                         attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor])
                 }

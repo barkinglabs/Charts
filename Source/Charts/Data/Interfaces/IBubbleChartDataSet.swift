@@ -26,4 +26,6 @@ public protocol IBubbleChartDataSet: IBarLineScatterCandleBubbleChartDataSet
     var highlightCircleWidth: CGFloat { get set }
 
     var allowsRenderingBelowXAxis: Bool { get }
+
+    var rendersAsBottomXAxisLabel: Bool { get set }
 }

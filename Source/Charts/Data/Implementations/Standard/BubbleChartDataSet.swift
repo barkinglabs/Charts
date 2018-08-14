@@ -44,6 +44,8 @@ open class BubbleChartDataSet: BarLineScatterCandleBubbleChartDataSet, IBubbleCh
     open var highlightCircleWidth: CGFloat = 2.5
 
     open var allowsRenderingBelowXAxis: Bool = true
+
+    open var rendersAsBottomXAxisLabel: Bool = false
     
     // MARK: - NSCopying
     
