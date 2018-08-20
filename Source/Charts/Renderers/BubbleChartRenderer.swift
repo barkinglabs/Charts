@@ -232,7 +232,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                             x: pt.x,
                             y: yValue
                         ),
-                        align: .center,
+                        align: e.valueTextAlignment,
                         attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor])
                 }
 

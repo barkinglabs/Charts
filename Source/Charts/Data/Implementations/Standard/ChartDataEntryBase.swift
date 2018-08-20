@@ -21,6 +21,9 @@ open class ChartDataEntryBase: NSObject
     
     /// optional icon image
     @objc open var icon: NSUIImage?
+
+    // Alignment of value label
+    @objc open var valueTextAlignment: NSTextAlignment = .center
     
     public override required init()
     {
