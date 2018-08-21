@@ -715,8 +715,6 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         
         context.saveGState()
         
-        var barRect = CGRect()
-        
         for high in indices
         {
             guard
@@ -724,14 +722,23 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 set.isHighlightEnabled
                 else { continue }
             
-            if let e = set.entryForXValue(high.x, closestToY: high.y) as? BarChartDataEntry
+            var barRect = CGRect()
+            let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
+
+            if dataProvider.isHighlightWithoutEntryEnabled {
+                context.setFillColor(set.highlightColor.cgColor)
+                context.setAlpha(high.alpha)
+                let y2 = !high.y.isNaN ? high.y : 3
+                prepareBarHighlight(x: high.x, y1: y2, y2: 0, barWidthHalf: barData.barWidth / 2.0, trans: trans, rect: &barRect)
+                setHighlightDrawPos(highlight: high, barRect: barRect)
+
+                context.fill(barRect)
+            } else if let e = set.entryForXValue(high.x, closestToY: high.y) as? BarChartDataEntry
             {
                 if !isInBoundsX(entry: e, dataSet: set)
                 {
                     continue
                 }
-                
-                let trans = dataProvider.getTransformer(forAxis: set.axisDependency)
                 
                 context.setFillColor(set.highlightColor.cgColor)
                 context.setAlpha(set.highlightAlpha)
