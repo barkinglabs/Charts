@@ -197,4 +197,6 @@ open class BarChartView: BarLineChartViewBase, BarChartDataProvider
 
     /// - returns: `true` if drawing each bar as rounded is enabled, `false` if not
     open var isDrawRoundedBarsEnabled: Bool { return drawRoundedBarsEnabled }
+
+    open var isHighlightWithoutEntryEnabled: Bool { return !tapToHighlightRequiresDataEntry }
 }
