@@ -26,6 +26,9 @@ open class Highlight: NSObject
     
     /// the y-pixel of the highlight
     private var _yPx = CGFloat.nan
+
+    /// the alpha value to be used when highlighting
+    private var _alpha: CGFloat = 1
     
     /// the index of the data object - in case it refers to more than one
     @objc open var dataIndex = Int(-1)
@@ -63,6 +66,7 @@ open class Highlight: NSObject
     @objc public init(
         x: Double, y: Double,
         xPx: CGFloat, yPx: CGFloat,
+        alpha: CGFloat = 1,
         dataIndex: Int,
         dataSetIndex: Int,
         stackIndex: Int,
@@ -74,6 +78,7 @@ open class Highlight: NSObject
         _y = y
         _xPx = xPx
         _yPx = yPx
+        _alpha = alpha
         self.dataIndex = dataIndex
         _dataSetIndex = dataSetIndex
         _stackIndex = stackIndex
@@ -129,10 +134,11 @@ open class Highlight: NSObject
     /// - parameter y: the y-value of the highlighted value
     /// - parameter dataSetIndex: the index of the DataSet the highlighted value belongs to
     /// - parameter dataIndex: The data index to search in (only used in CombinedChartView currently)
-    @objc public init(x: Double, y: Double, dataSetIndex: Int, dataIndex: Int = -1)
+    @objc public init(x: Double, y: Double, alpha: CGFloat = 1, dataSetIndex: Int, dataIndex: Int = -1)
     {
         _x = x
         _y = y
+         _alpha = alpha;
         _dataSetIndex = dataSetIndex
         self.dataIndex = dataIndex
     }
@@ -150,6 +156,7 @@ open class Highlight: NSObject
     @objc open var y: Double { return _y }
     @objc open var xPx: CGFloat { return _xPx }
     @objc open var yPx: CGFloat { return _yPx }
+    @objc open var alpha: CGFloat { return _alpha }
     @objc open var dataSetIndex: Int { return _dataSetIndex }
     @objc open var stackIndex: Int { return _stackIndex }
     @objc open var axis: YAxis.AxisDependency { return _axis }

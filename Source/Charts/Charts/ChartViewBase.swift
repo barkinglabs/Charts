@@ -437,9 +437,9 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// - parameter x: The x-value to highlight
     /// - parameter dataSetIndex: The dataset index to search in
     /// - parameter dataIndex: The data index to search in (only used in CombinedChartView currently)
-    @objc open func highlightValue(x: Double, dataSetIndex: Int, dataIndex: Int = -1)
+    @objc open func highlightValue(x: Double, dataSetIndex: Int, dataIndex: Int = -1, alpha: CGFloat = 1)
     {
-        highlightValue(x: x, dataSetIndex: dataSetIndex, dataIndex: dataIndex, callDelegate: true)
+        highlightValue(x: x, dataSetIndex: dataSetIndex, dataIndex: dataIndex, alpha: alpha, callDelegate: true)
     }
     
     /// Highlights the value at the given x-value and y-value in the given DataSet.
@@ -460,9 +460,9 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// - parameter dataSetIndex: The dataset index to search in
     /// - parameter dataIndex: The data index to search in (only used in CombinedChartView currently)
     /// - parameter callDelegate: Should the delegate be called for this change
-    @objc open func highlightValue(x: Double, dataSetIndex: Int, dataIndex: Int = -1, callDelegate: Bool)
+    @objc open func highlightValue(x: Double, dataSetIndex: Int, dataIndex: Int = -1, alpha: CGFloat = 1, callDelegate: Bool)
     {
-        highlightValue(x: x, y: .nan, dataSetIndex: dataSetIndex, dataIndex: dataIndex, callDelegate: callDelegate)
+        highlightValue(x: x, y: .nan, alpha: alpha, dataSetIndex: dataSetIndex, dataIndex: dataIndex, callDelegate: callDelegate)
     }
     
     /// Highlights the value at the given x-value and y-value in the given DataSet.
@@ -472,7 +472,7 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     /// - parameter dataSetIndex: The dataset index to search in
     /// - parameter dataIndex: The data index to search in (only used in CombinedChartView currently)
     /// - parameter callDelegate: Should the delegate be called for this change
-    @objc open func highlightValue(x: Double, y: Double, dataSetIndex: Int, dataIndex: Int = -1, callDelegate: Bool)
+    @objc open func highlightValue(x: Double, y: Double, alpha: CGFloat = 1, dataSetIndex: Int, dataIndex: Int = -1, callDelegate: Bool)
     {
         guard let data = _data else
         {
@@ -486,7 +486,16 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
         }
         else
         {
-            highlightValue(Highlight(x: x, y: y, dataSetIndex: dataSetIndex, dataIndex: dataIndex), callDelegate: callDelegate)
+            highlightValue(
+                Highlight(
+                    x: x,
+                    y: y,
+                    alpha: alpha,
+                    dataSetIndex: dataSetIndex,
+                    dataIndex: dataIndex
+                ),
+                callDelegate: callDelegate
+            )
         }
     }
     
