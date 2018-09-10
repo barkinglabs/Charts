@@ -207,33 +207,50 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                     (dataSet.allowsRenderingBelowXAxis || viewPortHandler.isInBoundsBottom(pt.y))
                     else { continue }
 
-                let text = formatter.stringForValue(
-                    Double(e.size),
-                    entry: e,
-                    dataSetIndex: i,
-                    viewPortHandler: viewPortHandler)
-
-                // Larger font for larger bubbles?
-                let valueFont = dataSet.valueFont
-                let lineHeight = valueFont.lineHeight
-
-                var yValue: CGFloat = pt.y - (0.5 * lineHeight)
-
-                if let xAxis = (dataProvider as? BarLineChartViewBase)?.xAxis, dataSet.rendersAsBottomXAxisLabel {
-                    yValue = viewPortHandler.contentBottom + xAxis.yOffset
-                }
 
                 if dataSet.isDrawValuesEnabled
                 {
-                    ChartUtils.drawText(
-                        context: context,
-                        text: text,
-                        point: CGPoint(
-                            x: pt.x,
-                            y: yValue
-                        ),
-                        align: e.valueTextAlignment,
-                        attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor])
+                    // Larger font for larger bubbles?
+                    let valueFont = dataSet.valueFont
+                    let lineHeight = valueFont.lineHeight
+
+                    var yValue: CGFloat = pt.y - (0.5 * lineHeight)
+
+                    if let xAxis = (dataProvider as? BarLineChartViewBase)?.xAxis, dataSet.rendersAsBottomXAxisLabel {
+                        yValue = viewPortHandler.contentBottom + xAxis.yOffset
+                    }
+                    if let attributedText = formatter.attributedStringForValue(
+                        Double(e.size),
+                        entry: e,
+                        dataSetIndex: i,
+                        viewPortHandler: viewPortHandler) {
+                        ChartUtils.drawAttributedText(
+                            context: context,
+                            attributedText: attributedText,
+                            point: CGPoint(
+                                x: pt.x,
+                                y: yValue
+                            ),
+                            align: e.valueTextAlignment
+                        )
+                    } else {
+                        let text = formatter.stringForValue(
+                            Double(e.size),
+                            entry: e,
+                            dataSetIndex: i,
+                            viewPortHandler: viewPortHandler)
+
+                        ChartUtils.drawText(
+                            context: context,
+                            text: text,
+                            point: CGPoint(
+                                x: pt.x,
+                                y: yValue
+                            ),
+                            align: e.valueTextAlignment,
+                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                        )
+                    }
                 }
 
                 if let icon = e.icon, dataSet.isDrawIconsEnabled
