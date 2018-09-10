@@ -100,4 +100,8 @@ open class DefaultValueFormatter: NSObject, IValueFormatter
             return formatter?.string(from: NSNumber(floatLiteral: value)) ?? ""
         }
     }
+
+    open func attributedStringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> NSAttributedString? {
+        return nil
+    }
 }

@@ -38,4 +38,23 @@ public protocol IValueFormatter: class
                         entry: ChartDataEntry,
                         dataSetIndex: Int,
                         viewPortHandler: ViewPortHandler?) -> String
+
+    /// Called when a value (from labels inside the chart) is formatted before being drawn.
+    ///
+    /// For performance reasons, avoid excessive calculations and memory allocations inside this method.
+    ///
+    /// - returns: An optional formatted label ready for being drawn. If a value is returned from here stringForValue will not be used
+    ///
+    /// - parameter value:           The value to be formatted
+    ///
+    /// - parameter axis:            The entry the value belongs to - in e.g. BarChart, this is of class BarEntry
+    ///
+    /// - parameter dataSetIndex:    The index of the DataSet the entry in focus belongs to
+    ///
+    /// - parameter viewPortHandler: provides information about the current chart state (scale, translation, ...)
+    ///
+    func attributedStringForValue(_ value: Double,
+                                  entry: ChartDataEntry,
+                                  dataSetIndex: Int,
+                                  viewPortHandler: ViewPortHandler?) -> NSAttributedString?
 }

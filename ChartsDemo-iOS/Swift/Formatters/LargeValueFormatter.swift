@@ -47,6 +47,10 @@ public class LargeValueFormatter: NSObject, IValueFormatter, IAxisValueFormatter
     public func stringForValue(_ value: Double, axis: AxisBase?) -> String {
         return format(value: value)
     }
+
+    public func attributedStringForValue(_ value: Double, entry: ChartDataEntry, dataSetIndex: Int, viewPortHandler: ViewPortHandler?) -> NSAttributedString? {
+        return nil
+    }
     
     public func stringForValue(
         _ value: Double,
