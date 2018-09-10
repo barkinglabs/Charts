@@ -175,6 +175,25 @@ open class ChartUtils
         
         NSUIGraphicsPopContext()
     }
+
+    open class func drawAttributedText(context: CGContext, attributedText: NSAttributedString, point: CGPoint, align: NSTextAlignment) {
+        var point = point
+
+        if align == .center
+        {
+            point.x -= attributedText.size().width / 2.0
+        }
+        else if align == .right
+        {
+            point.x -= attributedText.size().width
+        }
+
+        NSUIGraphicsPushContext(context)
+
+        attributedText.draw(at: point)
+
+        NSUIGraphicsPopContext()
+    }
     
     open class func drawText(context: CGContext, text: String, point: CGPoint, attributes: [NSAttributedStringKey : Any]?, anchor: CGPoint, angleRadians: CGFloat)
     {
