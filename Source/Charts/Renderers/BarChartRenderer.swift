@@ -159,7 +159,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 barRect.origin.x = left
                 barRect.size.width = right - left
                 barRect.origin.y = top
-                barRect.size.height = bottom - top + offset
+                barRect.size.height = bottom == top ? 0 : bottom - top + offset
 
                 buffer.rects[bufferIndex] = barRect
                 bufferIndex += 1
@@ -698,7 +698,7 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     /// Draws a value at the specified x and y position.
     @objc open func drawValue(context: CGContext, value: String, xPos: CGFloat, yPos: CGFloat, font: NSUIFont, align: NSTextAlignment, color: NSUIColor)
     {
-        ChartUtils.drawText(context: context, text: value, point: CGPoint(x: xPos, y: yPos), align: align, attributes: [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: color])
+        ChartUtils.drawText(context: context, text: value, point: CGPoint(x: xPos, y: yPos), align: align, attributes: [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: color])
     }
     
     open override func drawExtras(context: CGContext)
