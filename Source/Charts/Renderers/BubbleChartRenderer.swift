@@ -248,7 +248,7 @@ open class BubbleChartRenderer: BarLineScatterCandleBubbleRenderer
                                 y: yValue
                             ),
                             align: e.valueTextAlignment,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                            attributes: [NSAttributedString.Key.font: valueFont, NSAttributedString.Key.foregroundColor: valueTextColor]
                         )
                     }
                 }
