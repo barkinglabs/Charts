@@ -229,6 +229,14 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             context.clip(to: _viewPortHandler.contentRect)
         }
         renderer.drawData(context: context)
+
+        if
+            let dataSetIndexToHighlight = _dataSetIndexToHighlight,
+            let combinedChartRenderer = renderer as? CombinedChartRenderer,
+            let barChartRenderer = combinedChartRenderer._renderers.first(where: { $0 is BarChartRenderer }) as? BarChartRenderer
+        {
+            barChartRenderer.drawHighlightedDataSet(context: context, dataSetIndex: dataSetIndexToHighlight)
+        }
         
         // if highlighting is enabled
         if (valuesToHighlight())
