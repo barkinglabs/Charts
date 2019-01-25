@@ -705,6 +705,38 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
     {
         
     }
+
+    open func drawHighlightedDataSet(context: CGContext, dataSetIndex: Int) {
+        guard
+            let dataProvider = dataProvider,
+            let barData = dataProvider.barData
+            else {
+                return
+        }
+
+        guard let dataSet = barData.getDataSetByIndex(dataSetIndex) as? IBarChartDataSet else {
+            return
+        }
+
+        let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
+
+        prepareBuffer(dataSet: dataSet, index: dataSetIndex)
+        trans.rectValuesToPixel(&_buffers[dataSetIndex].rects)
+
+        let buffer = _buffers[dataSetIndex]
+
+        context.saveGState()
+        context.setFillColor(dataSet.dataSetHighlightColor.cgColor)
+
+        for barRect in buffer.rects.filter( { viewPortHandler.isInBoundsLeft($0.origin.x + $0.size.width) }) {
+            if !viewPortHandler.isInBoundsRight(barRect.origin.x) {
+                break
+            }
+            context.fill(barRect)
+        }
+
+        context.restoreGState()
+    }
     
     open override func drawHighlighted(context: CGContext, indices: [Highlight])
     {

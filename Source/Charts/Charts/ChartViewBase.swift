@@ -112,6 +112,8 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
     
     /// array of Highlight objects that reference the highlighted slices in the chart
     internal var _indicesToHighlight = [Highlight]()
+
+    internal var _dataSetIndexToHighlight: Int?
     
     /// `true` if drawing the marker is enabled when tapping on values
     /// (use the `marker` property to specify a marker)
@@ -566,6 +568,12 @@ open class ChartViewBase: NSUIView, ChartDataProvider, AnimatorDelegate
 
     /// The last value that was highlighted via touch.
     @objc open var lastHighlighted: Highlight?
+
+    // MARK: Highlight DataSet
+
+    open func highlightDataSet(dataSetIndex: Int?) {
+        _dataSetIndexToHighlight = dataSetIndex
+    }
   
     // MARK: - Markers
 
