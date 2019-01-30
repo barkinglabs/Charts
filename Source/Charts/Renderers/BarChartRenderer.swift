@@ -706,17 +706,20 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         
     }
 
-    open func drawHighlightedDataSet(context: CGContext, dataSetIndex: Int) {
+    open func drawHighlightedDataSet(context: CGContext, dataSetIndex: Int) -> CGPoint? {
         guard
             let dataProvider = dataProvider,
             let barData = dataProvider.barData
             else {
-                return
+                return nil
         }
 
         guard let dataSet = barData.getDataSetByIndex(dataSetIndex) as? IBarChartDataSet else {
-            return
+            return nil
         }
+
+        var maxYValue: CGFloat = 0
+        var maxYPoint: CGPoint? = nil
 
         let trans = dataProvider.getTransformer(forAxis: dataSet.axisDependency)
 
@@ -728,14 +731,23 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
         context.saveGState()
         context.setFillColor(dataSet.dataSetHighlightColor.cgColor)
 
-        for barRect in buffer.rects.filter( { viewPortHandler.isInBoundsLeft($0.origin.x + $0.size.width) }) {
+        let filteredBarRects = buffer.rects.filter( { viewPortHandler.isInBoundsLeft($0.origin.x + $0.size.width) })
+        var barRectCount: Int = 0
+        for barRect in filteredBarRects {
             if !viewPortHandler.isInBoundsRight(barRect.origin.x) {
                 break
             }
+            if barRect.size.height > maxYValue {
+                maxYPoint = CGPoint(x: barRect.origin.x + barRect.size.width / 2, y: barRect.size.height)
+                maxYValue = barRect.size.height
+            }
             context.fill(barRect)
+            barRectCount += 1
         }
 
         context.restoreGState()
+
+        return maxYPoint
     }
     
     open override func drawHighlighted(context: CGContext, indices: [Highlight])
