@@ -235,7 +235,9 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             let combinedChartRenderer = renderer as? CombinedChartRenderer,
             let barChartRenderer = combinedChartRenderer._renderers.first(where: { $0 is BarChartRenderer }) as? BarChartRenderer
         {
-            barChartRenderer.drawHighlightedDataSet(context: context, dataSetIndex: dataSetIndexToHighlight)
+            highestVisiblePointForHighlightedDataSet = barChartRenderer.drawHighlightedDataSet(context: context, dataSetIndex: dataSetIndexToHighlight)
+        } else {
+            highestVisiblePointForHighlightedDataSet = nil
         }
         
         // if highlighting is enabled
@@ -287,6 +289,8 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
         
         drawMarkers(context: context)
     }
+
+    open var highestVisiblePointForHighlightedDataSet: CGPoint? = nil
     
     private var _autoScaleLastLowestVisibleX: Double?
     private var _autoScaleLastHighestVisibleX: Double?
